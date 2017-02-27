@@ -1,0 +1,9 @@
+[Unit]
+Description=poltergeist certgen-prod service
+Requires=poltergeist.service
+After=poltergeist.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/poltergeist
+ExecStart=/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml run --rm certgen-prod && docker kill -s HUP poltergeist_haproxy_1

@@ -1,0 +1,4 @@
+node_modules
+volumes
+test/config.json
+.env

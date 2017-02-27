@@ -1,0 +1,13 @@
+[Unit]
+Description=poltergeist Docker Compose stack
+After=network.target docker.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/poltergeist
+ExecStart=/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+ExecStop=/usr/local/bin/docker-compose -f docker-compose.yml -f docker-compose.prod.yml down
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

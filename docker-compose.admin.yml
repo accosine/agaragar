@@ -1,0 +1,135 @@
+version: "3"
+
+services:
+  certgen-prod:
+    build: ./dockerfiles/certbot/
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    ports:
+      - "80:80"
+    volumes:
+      - prodcerts:/etc/letsencrypt
+    environment:
+      - DOMAIN
+      - LETSENCRYPT_EMAIL
+
+  certgen-dev:
+    build: ./dockerfiles/certgen-dev/
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    volumes:
+      - devcerts:/root
+
+  setup-couchdb-dev:
+    image: mhart/alpine-node:6.0.0
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    volumes:
+      - ./setup/couchdb:/root
+    command: node /root/setup-development.js
+    environment:
+      - COUCHDB_HOSTNAME=couchdb
+      - COUCHDB_DATABASE
+      - COUCHDB_PASSWORD
+      - COUCHDB_USER
+      - COUCHDB_PORT=5984
+    external_links:
+      - poltergeist_couchdb_1
+    networks:
+      - default
+      - poltergeist_default
+
+  setup-couchdb-prod:
+    image: mhart/alpine-node:6.0.0
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    volumes:
+      - ./setup/couchdb:/root
+    command: node /root/setup-production.js
+    environment:
+      - DOMAIN
+      - COUCHDB_DATABASE
+      - COUCHDB_PASSWORD
+      - COUCHDB_USER
+      - COUCHDB_HOSTNAME
+
+  backup-couchdb:
+    image: alpine:3.5
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    volumes:
+      - couchdb:/opt/couchdb/data
+      - ./volumes/couchdb:/opt/couchdb/backup
+    command: tar cvf /opt/couchdb/backup/backup.tar /opt/couchdb/data
+
+  restore-couchdb:
+    image: alpine:3.5
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    volumes:
+      - couchdb:/opt/couchdb/data
+      - ./volumes/couchdb:/opt/couchdb/backup
+    command: /bin/sh -c "cd /opt && tar xvf /opt/couchdb/backup/backup.tar --strip 1"
+
+  backup-redis:
+    image: alpine:3.5
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    volumes:
+      - redis:/data
+      - ./volumes/redis:/opt/backup
+    command: tar cvf /opt/backup/backup.tar /data
+    
+  restore-redis:
+    image: alpine:3.5
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    volumes:
+      - redis:/data
+      - ./volumes/redis:/opt/backup
+    command: /bin/sh -c "cd / && tar xvf /opt/backup/backup.tar"
+
+  backup-elasticsearch:
+    image: alpine:3.5
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+      - ./volumes/elasticsearch:/opt/backup
+    command: tar cvf /opt/backup/backup.tar /usr/share/elasticsearch/data
+
+  restore-elasticsearch:
+    image: alpine:3.5
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+      - ./volumes/elasticsearch:/opt/backup
+    command: /bin/sh -c "cd /usr && tar xvf /opt/backup/backup.tar --strip 1"
+
+  backup-prodcerts:
+    image: alpine:3.5
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    volumes:
+      - prodcerts:/etc/letsencrypt
+      - ./volumes/letsencrypt:/opt/letsencrypt/backup
+    command: tar cvf /opt/letsencrypt/backup/backup.tar /etc/letsencrypt
+
+  restore-prodcerts:
+    image: alpine:3.5
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    volumes:
+      - prodcerts:/etc/letsencrypt
+      - ./volumes/letsencrypt:/opt/letsencrypt/backup
+    command: /bin/sh -c "cd /etc && tar xvf /opt/letsencrypt/backup/backup.tar --strip 1"
+
+  #TODO: container for automatic, recurring backups to S3/GCS
+
+volumes:
+  couchdb:
+  devcerts:
+  prodcerts:
+  redis:
+  elasticsearch:
+
+networks:
+  poltergeist_default:
+    external: true

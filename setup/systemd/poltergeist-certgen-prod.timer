@@ -1,0 +1,11 @@
+[Unit]
+Description=poltergeist-certgen-prod weekly
+Requires=poltergeist.service
+
+[Timer]
+Unit=poltergeist-certgen-prod.service
+OnActiveSec=1min
+OnUnitInactiveSec=1w
+
+[Install]
+WantedBy=timers.target

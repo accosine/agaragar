@@ -1,0 +1,98 @@
+version: "3"
+
+services:
+  backend:
+    build: ./dockerfiles/backend/
+    logging:
+      driver: "${BACKEND_LOGGING_DRIVER}"
+    depends_on:
+      - couchdb
+    expose:
+      - "8081"
+    # TODO: use docker-compose file override for stateful production containers
+    # with application code and node_modules within the container
+    volumes:
+      - ./src/test/:/home/app/backend/
+    environment:
+      - NODE_ENV
+
+  couchdb:
+    build: ./dockerfiles/couchdb/
+    logging:
+      driver: "${COUCHDB_LOGGING_DRIVER}"
+    expose:
+      - "5984"
+    volumes:
+      - couchdb:/opt/couchdb/data
+    environment:
+      - COUCHDB_USER
+      - COUCHDB_PASSWORD
+      - NODENAME="${COUCHDB_NODENAME}"
+
+  haproxy:
+    build: ./dockerfiles/haproxy/
+    logging:
+      driver: "${HA_LOGGING_DRIVER}"
+    restart: on-failure
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - devcerts:/opt/haproxy/certs
+    environment:
+      - CERTS_PATH=/opt/haproxy/certs
+      - DOMAIN
+      - HA_STATS_USER
+      - HA_STATS_PASSWORD
+      - HA_STATS_PATH
+      - ES_USER
+      - ES_PASSWORD
+
+  redis:
+    build: ./dockerfiles/redis/
+    logging:
+      driver: "${REDIS_LOGGING_DRIVER}"
+    ports:
+      - "6379"
+    volumes:
+      - redis:/data
+    command: "redis-server /usr/local/etc/redis/redis.conf --requirepass $REDIS_PASSWORD --loglevel debug --bind redis"
+    environment:
+      - REDIS_PASSWORD
+
+  elasticsearch:
+    build: ./dockerfiles/elasticsearch/
+    logging:
+      driver: "${ES_LOGGING_DRIVER}"
+    ports:
+      - "9200"
+      - "9300"
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - ES_JAVA_OPTS
+
+  logstash:
+    build: ./dockerfiles/logstash
+    logging:
+      driver: "${LS_LOGGING_DRIVER}"
+    environment:
+      - LS_JAVA_OPTS
+      - LS_HEAP_SIZE
+      - COUCHDB_DATABASE
+      - COUCHDB_USER
+      - COUCHDB_PASSWORD
+
+volumes:
+  couchdb:
+    external:
+      name: poltergeist_couchdb
+  redis:
+    external:
+      name: poltergeist_redis
+  elasticsearch:
+    external:
+      name: poltergeist_elasticsearch
+  devcerts:
+    external:
+      name: poltergeist_devcerts

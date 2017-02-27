@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  certgen-prod:
+    build: ./dockerfiles/certbot/
+    environment:
+      - DOMAIN
+      - LETSENCRYPT_EMAIL
+    depends_on:
+      - haproxy
+    ports:
+      - "80"
+    volumes:
+      - prodcerts:/etc/letsencrypt
+
+  haproxy:
+    volumes:
+      - prodcerts:/opt/haproxy/certs
+    environment:
+      - CERTS_PATH=/opt/haproxy/certs/live/${DOMAIN}/${DOMAIN}.pem
+
+  redis:
+    logging:
+      driver: "${REDIS_LOGGING_DRIVER}"
+    command: "redis-server /usr/local/etc/redis/redis.conf --requirepass $REDIS_PASSWORD --loglevel notice --bind redis"
+    environment:
+      - REDIS_PASSWORD
+
+volumes:
+  prodcerts:
+    external:
+      name: poltergeist_prodcerts
