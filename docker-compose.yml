@@ -1,20 +1,28 @@
 version: "3"
 
 services:
-  backend:
-    build: ./dockerfiles/backend/
+  api:
+    build: ./dockerfiles/api/
     logging:
-      driver: "${BACKEND_LOGGING_DRIVER}"
+      driver: "${API_LOGGING_DRIVER}"
     depends_on:
       - couchdb
     expose:
-      - "8081"
+      - "8080"
     # TODO: use docker-compose file override for stateful production containers
     # with application code and node_modules within the container
     volumes:
-      - ./src/test/:/home/app/backend/
+      - ./src/api/:/home/app/api/
+      - ./src/asport/:/home/app/asport/
+      - ./src/test/:/home/app/test/
     environment:
       - NODE_ENV
+      - HOSTNAME=api
+      - COUCHDB_HOSTNAME=couchdb
+      - COUCHDB_DATABASE
+      - COUCHDB_USER
+      - COUCHDB_PASSWORD
+      - COUCHDB_PORT=5984
 
   couchdb:
     build: ./dockerfiles/couchdb/

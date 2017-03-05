@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "prestart": "npm install",
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "gray-matter": "^2.1.1",
+    "nano": "^6.2.0"
+  }
+}

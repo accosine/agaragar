@@ -71,6 +71,28 @@ services:
       - ./volumes/couchdb:/opt/couchdb/backup
     command: /bin/sh -c "cd /opt && tar xvf /opt/couchdb/backup/backup.tar --strip 1"
 
+  import-couchdb-data:
+    image: mhart/alpine-node:6.0.0
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    volumes:
+      - ./setup/importdb:/root
+      - ./volumes/couchdb/import:/root/import
+    command: /bin/sh -c "cd /root && npm start"
+    environment:
+      - COUCHDB_HOSTNAME=couchdb
+      - COUCHDB_DATABASE
+      - COUCHDB_PASSWORD
+      - COUCHDB_USER
+      - COUCHDB_PORT=5984
+      - COUCHDB_ARTICLE_PREFIX
+    external_links:
+      - poltergeist_couchdb_1
+    networks:
+      - default
+      - poltergeist_default
+
+
   backup-redis:
     image: alpine:3.5
     logging:
@@ -79,7 +101,7 @@ services:
       - redis:/data
       - ./volumes/redis:/opt/backup
     command: tar cvf /opt/backup/backup.tar /data
-    
+
   restore-redis:
     image: alpine:3.5
     logging:

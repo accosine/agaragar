@@ -1,10 +1,11 @@
 {
 	"connections": [
 		{
-			"port": 3000,
+			"port": 8080,
 			"labels": [
 				"http"
-			]
+			],
+			"host": "api"
 		}
 	],
 	"server": {
@@ -15,9 +16,19 @@
 	"registrations": [
 		{
 			"plugin": {
-				"register": "./test.js",
+				"register": "../test/app.js"
+			}
+		},
+		{
+			"plugin": {
+				"register": "../asport",
 				"options": {
-					
+					"methodname": "database",
+					"hostname": "couchdb",
+					"database": "ectoplasm",
+					"port": "5984",
+					"user": "admin",
+					"password": "secret"
 				}
 			}
 		},

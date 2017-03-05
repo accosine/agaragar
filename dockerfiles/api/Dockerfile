@@ -9,6 +9,6 @@ ENV HOME=/home/app
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-WORKDIR $HOME/backend
+WORKDIR $HOME/api
 
 CMD ["npm", "start"]

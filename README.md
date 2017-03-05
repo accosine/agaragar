@@ -91,6 +91,21 @@ Restore a previously made backup:
 - TODO: dnsmasq setup
 
 
+## Populate Database
+If you have Markdown files with yaml frontmatter, you can directly import them
+as documents into CouchDB.
+
+Create the folder that will hold your Markdown documents:
+
+    mkdir -p volumes/couchdb/import
+
+
+Copy Markdown files into the import folder and import them (this only works
+locally in development mode):
+
+    docker-compose -f docker-compose.admin.yml run import-couchdb-data
+
+
 ## MacOS
 Delete all .DS_Store files:
 

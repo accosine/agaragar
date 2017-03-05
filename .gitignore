@@ -1,4 +1,5 @@
 node_modules
+npm-debug.log
 volumes
 test/config.json
 .env
