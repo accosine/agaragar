@@ -17,7 +17,7 @@ module.exports = {
     $filter: 'env',
     $base: [{
       plugin: {
-        register: '../test/app.js',
+        register: '../autoscopy',
       }
     },
     {

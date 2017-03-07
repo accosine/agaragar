@@ -1,8 +1,7 @@
 {
   "name": "asport",
   "version": "0.0.1",
-  "main": "index.js",
-  "license": "MIT",
+  "license": "BSD",
   "dependencies": {
     "nano": "^6.2.0"
   }

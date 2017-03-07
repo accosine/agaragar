@@ -143,6 +143,15 @@ services:
       - ./volumes/letsencrypt:/opt/letsencrypt/backup
     command: /bin/sh -c "cd /etc && tar xvf /opt/letsencrypt/backup/backup.tar --strip 1"
 
+  setup-api-dev:
+    image: mhart/alpine-node:6.0.0
+    logging:
+      driver: "${SETUP_LOGGING_DRIVER}"
+    volumes:
+      - ./:/poltergeist
+    command: /bin/sh -c "apk add --no-cache git && npm i -g lerna && cd /poltergeist && lerna bootstrap"
+    # command: /bin/sh -c "ping google.com"
+
   #TODO: container for automatic, recurring backups to S3/GCS
 
 volumes:

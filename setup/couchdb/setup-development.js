@@ -15,7 +15,16 @@ const {
   COUCHDB_PORT: port
 } = process.env;
 
-function request(hostname, auth, path, method, port) {
+const articles = {
+  "_id" : "_design/articles",
+    "views" : {
+      "category" : {
+        "map" : "function(doc) { emit(doc.collection, doc); }"
+      }
+    }
+};
+
+function request(hostname, auth, path, method, port, body) {
   const options = {
     hostname,
     port,
@@ -34,13 +43,17 @@ function request(hostname, auth, path, method, port) {
   req.on('error', (e) => {
     console.log('problem with request: ' + e.message);
   });
-  // write data to request body
-  // req.write('{"string": "Hello, World"}');
+  if (body) {
+    // write data to request body
+    req.write(JSON.stringify(body));
+  }
   req.end();
 }
 request(hostname, user + ':' + password, '/_global_changes', 'PUT', port);
 request(hostname, user + ':' + password, '/_metadata', 'PUT', port);
 request(hostname, user + ':' + password, '/_replicator', 'PUT', port);
 request(hostname, user + ':' + password, '/_users', 'PUT', port);
-
 request(hostname, user + ':' + password, '/' + database, 'PUT', port);
+request(hostname, user + ':' + password, '/' + database + '/' + '_design/articles', 'PUT', port, articles);
+
+// TODO: create unpriviledged CouchDB user

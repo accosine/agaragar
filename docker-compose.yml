@@ -14,7 +14,7 @@ services:
     volumes:
       - ./src/api/:/home/app/api/
       - ./src/asport/:/home/app/asport/
-      - ./src/test/:/home/app/test/
+      - ./src/autoscopy/:/home/app/autoscopy/
     environment:
       - NODE_ENV
       - HOSTNAME=api

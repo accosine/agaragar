@@ -1,5 +1,7 @@
 node_modules
+.npm
 npm-debug.log
 volumes
 test/config.json
 .env
+src/api/config.json

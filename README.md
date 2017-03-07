@@ -46,6 +46,11 @@ count:
     sysctl -w vm.max_map_count=262144
 
 
+Install node.js packages via lerna:
+
+    docker-compose -f docker-compose.admin.yml run setup-api-dev
+
+
 When you are ready, start the whole stack in production mode:
 
     docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build
