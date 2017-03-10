@@ -1,8 +1,14 @@
 {
   "name": "asport",
   "version": "0.0.1",
+  "description": "",
   "license": "BSD",
   "dependencies": {
     "nano": "^6.2.0"
-  }
+  },
+  "devDependencies": {},
+  "author": "accosine",
+  "repository": "https://github.com/accosine/poltergeist/tree/master/src/asport",
+  "keywords": ["CouchDB", "hapi", "hapijs", "nano", "plugin"],
+  "license": "BSD"
 }

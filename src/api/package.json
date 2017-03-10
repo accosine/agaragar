@@ -2,7 +2,10 @@
   "name": "api",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "scripts": {
+    "prestart": "blum -c Criteria.js -m Manifest.js -f config.json",
+    "start": "rejoice -c config.json -p ."
+  },
   "dependencies": {
     "asport": "^0.0.1",
     "blipp": "^2.3.0",
@@ -14,10 +17,8 @@
     "autoscopy": "^0.0.1"
   },
   "devDependencies": {},
-  "scripts": {
-    "prestart": "blum -c Criteria.js -m Manifest.js -f config.json",
-    "start": "rejoice -c config.json -p ."
-  },
   "author": "accosine",
+  "repository": "https://github.com/accosine/poltergeist/tree/master/src/api",
+  "keywords": [],
   "license": "BSD"
 }

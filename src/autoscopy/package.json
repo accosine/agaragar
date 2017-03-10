@@ -5,5 +5,7 @@
   "dependencies": {},
   "devDependencies": {},
   "author": "accosine",
+  "repository": "https://github.com/accosine/poltergeist/tree/master/src/autoscopy",
+  "keywords": [],
   "license": "BSD"
 }

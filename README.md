@@ -63,7 +63,7 @@ count and disable `Transparent Huge Pages` on the Docker host:
     docker-compose up --build
 
 
-10.) Make the stack locally accessible via domains in your hosts file:
+10.) Make the stack locally accessible via (sub-)domain in your hosts file:
 
     127.0.0.1 example.com
     127.0.0.1 db.example.com
@@ -75,6 +75,9 @@ count and disable `Transparent Huge Pages` on the Docker host:
 ---
 
 ### Production Setup
+
+0.) Set A-Records for the following subdomains: `api`, `db`,`search` and let
+them propagate.
 
 1.) Copy `example.env` to `.env` and change settings accordingly.
 
@@ -131,8 +134,6 @@ count and disable "Transparent Huge Pages" on the Docker host:
 9.) Restart the whole stack with everything set up:
 
     docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build
-
-10.) Set A-Records for the following subdomains: `api`, `db`,`search`.
 
 
 ## System service
