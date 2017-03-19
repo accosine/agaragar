@@ -18,7 +18,10 @@ module.exports = {
     $base: [{
       plugin: {
         register: '../autoscopy',
-      }
+        options: {
+          collections: JSON.parse(process.env.API_COLLECTIONS)
+        }
+      },
     },
     {
       plugin: {

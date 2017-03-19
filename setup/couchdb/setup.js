@@ -1,19 +1,18 @@
-if (!process.env.COUCHDB_HOSTNAME ||
-    !process.env.COUCHDB_PORT||
-    !process.env.COUCHDB_USER||
-    !process.env.COUCHDB_PASSWORD ||
-    !process.env.COUCHDB_DATABASE) {
-  throw new Error('Missing environment variables');
-}
-const http = require("http");
+const transport = process.env.NODE_ENV === 'production' ?
+  require('https') :
+  require('http');
 
 const {
+  DOMAIN: domain,
   COUCHDB_HOSTNAME: hostname,
   COUCHDB_USER: user,
   COUCHDB_PASSWORD: password,
   COUCHDB_DATABASE: database,
   COUCHDB_PORT: port
 } = process.env;
+
+const fqdn = process.env.NODE_ENV === 'production' ?
+  hostname + '.' + domain : hostname;
 
 const articles = {
   "_id" : "_design/articles",
@@ -34,7 +33,7 @@ function request(hostname, auth, path, method, port, body) {
     headers: { 'Content-Type': 'application/json' }
   };
 
-  const req = http.request(options, (res) => {
+  const req = transport.request(options, (res) => {
     res.setEncoding('utf8');
     res.on('data', (body) => {
       console.log(body);
@@ -49,11 +48,12 @@ function request(hostname, auth, path, method, port, body) {
   }
   req.end();
 }
-request(hostname, user + ':' + password, '/_global_changes', 'PUT', port);
-request(hostname, user + ':' + password, '/_metadata', 'PUT', port);
-request(hostname, user + ':' + password, '/_replicator', 'PUT', port);
-request(hostname, user + ':' + password, '/_users', 'PUT', port);
-request(hostname, user + ':' + password, '/' + database, 'PUT', port);
-request(hostname, user + ':' + password, '/' + database + '/' + '_design/articles', 'PUT', port, articles);
+
+request(fqdn, user + ':' + password, '/_global_changes', 'PUT', port);
+request(fqdn, user + ':' + password, '/_metadata', 'PUT', port);
+request(fqdn, user + ':' + password, '/_replicator', 'PUT', port);
+request(fqdn, user + ':' + password, '/_users', 'PUT', port);
+request(fqdn, user + ':' + password, '/' + database, 'PUT', port);
+request(fqdn, user + ':' + password, '/' + database + '/' + '_design/articles', 'PUT', port, articles);
 
 // TODO: create unpriviledged CouchDB user

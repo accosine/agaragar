@@ -18,6 +18,7 @@ services:
     environment:
       - NODE_ENV
       - HOSTNAME=api
+      - API_COLLECTIONS
       - COUCHDB_HOSTNAME=couchdb
       - COUCHDB_DATABASE
       - COUCHDB_USER

@@ -1,32 +1,70 @@
-exports.register = (server, options, next) => {
+// TODO: split routes into individual files
+// TODO: don't hardcode 'article_' and 'page_' id prefixes
 
+exports.register = (server, options, next) => {
   server.route([
     {
       method: 'GET',
-      path: '/{category}/{article}',
+      path: '/collections',
       config: {
         handler: (request, reply) => {
-          server.methods.database().get('article_' + request.params.article,
-            (err, body) => err ? reply(err) : reply(body));
-        }
-      }
+          reply(options.collections);
+        },
+      },
     },
     {
       method: 'GET',
-      path: '/{category}',
+      path: `/{page}`,
       config: {
         handler: (request, reply) => {
-          server.methods.database().view('articles', 'category', { key: request.params.category },
-            (err, body) => err ? reply(err) : reply(body));
-        }
-      }
-    }
+          server.methods
+            .database()
+            .get(
+              'page_' + request.params.page,
+              (err, body) => err ? reply(err) : reply(body)
+            );
+        },
+      },
+    },
   ]);
+
+  for (let collectionpath in options.collections) {
+    const collectionname = options.collections[collectionpath];
+    server.route({
+      method: 'GET',
+      path: `/${collectionpath}`,
+      config: {
+        handler: (request, reply) => {
+          server.methods
+            .database()
+            .view(
+              'articles',
+              'category',
+              { key: collectionname },
+              (err, body) => err ? reply(err) : reply(body)
+            );
+        },
+      },
+    });
+    server.route({
+      method: 'GET',
+      path: `/${collectionpath}/{article}`,
+      config: {
+        handler: (request, reply) => {
+          server.methods
+            .database()
+            .get(
+              'article_' + request.params.article,
+              (err, body) => err ? reply(err) : reply(body)
+            );
+        },
+      },
+    });
+  }
 
   return next();
 };
 
 exports.register.attributes = {
-  pkg: require('./package.json')
+  pkg: require('./package.json'),
 };
-
