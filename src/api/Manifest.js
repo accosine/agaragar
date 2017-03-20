@@ -2,11 +2,7 @@ module.exports = {
   connections: [{
     port: 8080,
     labels: ['http'],
-    host: {
-      $filter: 'env',
-      production: process.env.HOSTNAME,
-      $default: 'localhost'
-    }
+    host: process.env.HOSTNAME
   }],
   server: {
     app: {

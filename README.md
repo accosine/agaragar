@@ -37,14 +37,15 @@ If you have Markdown files with yaml frontmatter, you can directly import them
 as documents into CouchDB.
 Create the folder that will hold your Markdown documents:
 
-    mkdir -p volumes/couchdb/import
+    mkdir -p volumes/couchdb/import/articles
+    mkdir -p volumes/couchdb/import/pages
 
 
-Copy Markdown files into the import folder and import them (this only works
-locally and in development mode):
+Copy Markdown files into the corresponding folder and import them (this only
+works locally in development mode):
 
-    docker-compose -f docker-compose.admin.yml run import-couchdb-data
-
+    docker-compose -f docker-compose.admin.yml run import-couchdb-articles
+    docker-compose -f docker-compose.admin.yml run import-couchdb-pages
 
 7.) If you're on a Linux flavour, you have to raise the virtual memory max map
 count and disable `Transparent Huge Pages` on the Docker host:
@@ -60,7 +61,7 @@ count and disable `Transparent Huge Pages` on the Docker host:
 
 9.) Restart the whole stack with everything set up:
 
-    docker-compose up --build
+    docker-compose down && docker-compose up --build
 
 
 10.) Make the stack locally accessible via (sub-)domain in your hosts file:
